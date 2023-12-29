@@ -5,6 +5,8 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,15 +21,12 @@ export default function Home() {
 
       console.log(data);
 
-      const response = await axios.post(
-        `https://book-crud-service-6dmqxfovfq-et.a.run.app/api/login`,
-        data,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${serverUrl}/api/login`, data, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
       router.push("/");
       console.log(response);
     } catch (error) {

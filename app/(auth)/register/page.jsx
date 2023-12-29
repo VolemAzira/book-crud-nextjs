@@ -4,6 +4,8 @@ import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
 
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
 export default function register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,16 +24,12 @@ export default function register() {
 
       console.log(data);
 
-      const res = await axios.post(
-        `https://book-crud-service-6dmqxfovfq-et.a.run.app/api/register`,
-        data,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.post(`${serverUrl}/api/register`, data, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
       console.log(res);
     } catch (error) {
       if (axios.isAxiosError(error)) {
