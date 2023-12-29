@@ -1,38 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function register() {
-  const [name, setName] = useState("");
+export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleRegister = async (e) => {
+  const router = useRouter();
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = {
-        name,
         email,
         password,
-        confirmPassword,
       };
 
       console.log(data);
 
-      const res = await axios.post(
-        `https://book-crud-service-6dmqxfovfq-et.a.run.app/api/register`,
+      const response = await axios.post(
+        `https://book-crud-service-6dmqxfovfq-et.a.run.app/api/login`,
         data,
         {
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
           },
         }
       );
-      console.log(res);
+      router.push("/");
+      console.log(response);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.message);
@@ -41,21 +38,14 @@ export default function register() {
       }
     }
   };
+
   return (
     <main className="flex h-screen items-center justify-center">
       <form
-        onSubmit={handleRegister}
+        onSubmit={handleLogin}
         className="flex flex-col gap-5 text-center bg-primary p-10 rounded-xl"
       >
-        <h1 className="font-bold text-slate-200">REGISTER AN ACCOUNT</h1>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          placeholder="Full name"
-          className="w-full px-2 py-1 rounded"
-          onChange={(e) => setName(e.target.value)}
-        />
+        <h1 className="font-bold text-slate-200">LOGIN ACCOUNT</h1>
         <input
           type="email"
           name="email"
@@ -72,30 +62,16 @@ export default function register() {
           className="w-full px-2 py-1 rounded"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <label
-          htmlFor="confirmPassword"
-          className="text-start text-sm text-white"
-        >
-          Confirm Password
-        </label>
-        <input
-          type="password"
-          name="confirmPassword"
-          id="confirmPassword"
-          placeholder="Password"
-          className="w-full px-2 py-1 rounded"
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
         <button
           type="submit"
           className="w-full bg-white text-black rounded font-semibold py-1"
         >
-          Register
+          Login
         </button>
         <p className="text-sm text-white">
-          Already have an account?{" "}
-          <Link href="/login" className="underline font-semibold">
-            Login
+          Dont have an account?{" "}
+          <Link href="/register" className="underline font-semibold">
+            Register
           </Link>
         </p>
       </form>

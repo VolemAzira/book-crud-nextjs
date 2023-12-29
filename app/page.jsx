@@ -1,80 +1,63 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import axios from "axios";
-import { useRouter } from "next/router";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+} from "flowbite-react";
 
-export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const data = {
-        username,
-        password,
-      };
-
-      const response = await axios.post(
-        `https://book-crud-service-6dmqxfovfq-et.a.run.app/api/login`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      console.log(response);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
-      } else {
-        console.error("Unexpected error:", error);
-      }
-    }
-  };
-
+const dashboard = () => {
   return (
-    <main className="flex h-screen items-center justify-center">
-      <form
-        // onSubmit={handleLogin}
-        onSubmit={() => useRouter().push("/add")}
-        className="flex flex-col gap-5 text-center bg-primary p-10 rounded-xl"
-      >
-        <h1 className="font-bold text-slate-200">LOGIN ACCOUNT</h1>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
-          aria-label="Username"
-          className="w-full px-2 py-1 rounded"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Password"
-          aria-label="Password"
-          className="w-full px-2 py-1 rounded"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button
-          type="submit"
-          className="w-full bg-white text-black rounded font-semibold py-1"
-        >
-          Login
-        </button>
-        <p className="text-sm text-white">
-          Dont have an account?{" "}
-          <Link href="/register" className="underline font-semibold">
-            Register
-          </Link>
-        </p>
-      </form>
+    <main className="flex flex-col gap-10">
+      <h1 className="text-2xl font-bold text-center">Dashboard Page</h1>
+      <section className="flex flex-col gap-5">
+        <Link href={"/add"}>
+          <button className="bg-primary text-white px-3 py-2 rounded font-semibold hover:bg-primary/80 transition-all duration-100 ease-in-out">
+            Add New Product
+          </button>
+        </Link>
+        <div className="overflow-x-auto shadow">
+          <Table>
+            <TableHead>
+              <TableHeadCell>Product name</TableHeadCell>
+              <TableHeadCell>Color</TableHeadCell>
+              <TableHeadCell>Category</TableHeadCell>
+              <TableHeadCell>Price</TableHeadCell>
+              <TableHeadCell>
+                <span className="sr-only">Edit</span>
+              </TableHeadCell>
+            </TableHead>
+            <TableBody className="divide-y">
+              <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {'Apple MacBook Pro 17"'}
+                </TableCell>
+                <TableCell>Sliver</TableCell>
+                <TableCell>Laptop</TableCell>
+                <TableCell>$2999</TableCell>
+                <TableCell className="flex gap-3">
+                  <Link
+                    href="/edit"
+                    className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                  >
+                    Edit
+                  </Link>
+                  <a
+                    href="#"
+                    className="font-medium text-red-600 hover:underline dark:text-red-500"
+                  >
+                    Delete
+                  </a>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </section>
     </main>
   );
-}
+};
+
+export default dashboard;
