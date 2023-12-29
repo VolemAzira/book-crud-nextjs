@@ -8,7 +8,7 @@ export default function register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password_confirmation, setPassword_confirmation] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ export default function register() {
         name,
         email,
         password,
-        confirmPassword,
+        password_confirmation,
       };
 
       console.log(data);
@@ -73,18 +73,18 @@ export default function register() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <label
-          htmlFor="confirmPassword"
+          htmlFor="password_confirmation"
           className="text-start text-sm text-white"
         >
           Confirm Password
         </label>
         <input
           type="password"
-          name="confirmPassword"
-          id="confirmPassword"
+          name="password_confirmation"
+          id="password_confirmation"
           placeholder="Password"
           className="w-full px-2 py-1 rounded"
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => setPassword_confirmation(e.target.value)}
         />
         <button
           type="submit"
