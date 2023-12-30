@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -14,27 +13,26 @@ export default function Home() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = {
-        email,
-        password,
-      };
-
-      console.log(data);
-
-      const response = await axios.post(`${serverUrl}/api/login`, data, {
+      const res = await fetch(`${serverUrl}/api/login`, {
+        method: "POST",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email, password }),
       });
-      router.push("/");
-      console.log(response);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
+
+      const data = await res.json();
+
+      if (data.error) {
+        alert("Error: " + data.error);
       } else {
-        console.error("Unexpected error:", error);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        alert("Login success");
+        router.push("/");
       }
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
   };
 

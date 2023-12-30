@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import axios from "axios";
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -11,32 +11,28 @@ export default function register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPassword_confirmation] = useState("");
+  const router = useRouter();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const data = {
-        name,
-        email,
-        password,
-        password_confirmation,
-      };
-
-      console.log(data);
-
-      const res = await axios.post(`${serverUrl}/api/register`, data, {
+      const res = await fetch(`${serverUrl}/api/register`, {
+        method: "POST",
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ name, email, password, password_confirmation }),
       });
-      console.log(res);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
+
+      const data = await res.json();
+
+      if (data.error) {
+        alert(data.error);
       } else {
-        console.error("Unexpected error:", error);
+        router.push("/login");
       }
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
   };
   return (
