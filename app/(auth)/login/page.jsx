@@ -50,6 +50,7 @@ export default function Home() {
           placeholder="email"
           className="w-full px-2 py-1 rounded"
           onChange={(e) => setEmail(e.target.value)}
+          value="volem123@gmail.com"
         />
         <input
           type="password"
@@ -58,6 +59,7 @@ export default function Home() {
           placeholder="Password"
           className="w-full px-2 py-1 rounded"
           onChange={(e) => setPassword(e.target.value)}
+          value="volem123"
         />
         <button
           type="submit"

@@ -16,8 +16,9 @@ const dashboard = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${localStorage.getItem("token")}`,
-            Authorization: `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
+            Authorization: localStorage.getItem("token")
+              ? `Bearer ${localStorage.getItem("token")}`
+              : `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
           },
         });
 
@@ -76,9 +77,15 @@ const dashboard = () => {
                     <Table.Cell className="flex gap-3">
                       <Link
                         href={`/edit/${book.id}`}
-                        className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                        className="font-medium text-green-600 hover:underline dark:text-green-500"
                       >
                         Edit
+                      </Link>
+                      <Link
+                        href={`/detail/${book.id}`}
+                        className="font-medium text-zinc-600 hover:underline dark:text-zinc-500"
+                      >
+                        Detail
                       </Link>
                       <a
                         href="#"

@@ -1,74 +1,70 @@
 "use client";
 
-import React from "react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Link } from "next/link";
 
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const Page = () => {
-  const [isbn, setIsbn] = useState("");
-  const [title, setTitle] = useState("");
-  const [subtitle, setSubtitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [published, setPublished] = useState("");
-  const [publisher, setPublisher] = useState("");
-  const [pages, setPages] = useState("");
-  const [description, setDescription] = useState("");
-  const [website, setWebsite] = useState("");
-  const [book, setBook] = useState([]);
+  const [book, setBook] = useState({
+    isbn: "",
+    title: "",
+    subtitle: "",
+    author: "",
+    published: "",
+    publisher: "",
+    pages: "",
+    description: "",
+    website: "",
+  });
 
-  const { bookId } = useParams();
+  // const { book_Id } = useParams();
+  const book_Id = 349;
 
-  useEffect(() => {
+  const fetchBookById = async () => {
     try {
-      const fetchbookbyid = async () => {
-        const res = await fetch(`${serverUrl}/api/books/${bookId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
-          },
-        });
-        const data = await res.json();
-        if (data.error) {
-          alert("Error: " + data.error);
-        } else {
-          setBook(data);
-        }
-      };
-      fetchbookbyid();
+      const res = await fetch(`${serverUrl}/api/books/${book_Id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token")
+            ? `Bearer ${localStorage.getItem("token")}`
+            : `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
+        },
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert("Error: " + data.error);
+      } else {
+        // Parse and format the published date
+        const publishedDate = data.published.split(" ")[0]; // Extract date part
+        setBook({ ...data, published: publishedDate });
+      }
     } catch (error) {
       console.error("Unexpected error:", error);
     }
-  }, [bookId]);
+  };
+
+  useEffect(() => {
+    fetchBookById();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${serverUrl}/api/books/${bookId}/edit`, {
-        method: "POST",
+      const res = await fetch(`${serverUrl}/api/books/${book_Id}/edit`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
         },
-        body: JSON.stringify({
-          isbn,
-          title,
-          subtitle,
-          author,
-          published,
-          publisher,
-          pages,
-          description,
-          website,
-        }),
+        body: JSON.stringify(book),
       });
 
       if (res.ok) {
         const data = await res.json();
-        alert("Add book success");
+        alert("Edit book success");
         console.log(data);
       } else {
         const data = await res.json();
@@ -100,14 +96,14 @@ const Page = () => {
           <span className="w-1/2">
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div>
-                <label htmlFor="isbn">isbn</label>
+                <label htmlFor="isbn">ISBN</label>
                 <br />
                 <input
                   type="number"
                   name="isbn"
-                  placeholder="isbn"
+                  placeholder="ISBN"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setIsbn(e.target.value)}
+                  onChange={(e) => setBook({ ...book, isbn: e.target.value })}
                   value={book.isbn}
                   required
                 />
@@ -120,18 +116,22 @@ const Page = () => {
                   name="title"
                   placeholder="Title"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => setBook({ ...book, title: e.target.value })}
+                  value={book.title}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="subtitle">subtitle</label>
+                <label htmlFor="subtitle">Subtitle</label>
                 <input
                   type="text"
                   name="subtitle"
-                  placeholder="subtitle"
+                  placeholder="Subtitle"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setSubtitle(e.target.value)}
+                  onChange={(e) =>
+                    setBook({ ...book, subtitle: e.target.value })
+                  }
+                  value={book.subtitle}
                   required
                 />
               </div>
@@ -142,62 +142,80 @@ const Page = () => {
                   name="author"
                   placeholder="Author"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setAuthor(e.target.value)}
+                  onChange={(e) => setBook({ ...book, author: e.target.value })}
+                  value={book.author}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="published">published</label>
+                <label htmlFor="published">Published</label>
                 <input
                   type="date"
                   name="published"
-                  placeholder="published"
+                  placeholder="Published"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setPublished(e.target.value)}
+                  onChange={(e) => {
+                    // Format the date to "yyyy-MM-dd" format
+                    const formattedDate = new Date(e.target.value)
+                      .toISOString()
+                      .split("T")[0];
+                    setBook({ ...book, published: formattedDate });
+                  }}
+                  value={book.published}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="publisher">publisher</label>
+                <label htmlFor="publisher">Publisher</label>
                 <input
                   type="text"
                   name="publisher"
-                  placeholder="publisher"
+                  placeholder="Publisher"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setPublisher(e.target.value)}
+                  onChange={(e) =>
+                    setBook({ ...book, publisher: e.target.value })
+                  }
+                  value={book.publisher}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="pages">pages</label>
+                <label htmlFor="pages">Pages</label>
                 <input
                   type="number"
                   name="pages"
-                  placeholder="pages"
+                  placeholder="Pages"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setPages(e.target.value)}
+                  onChange={(e) => setBook({ ...book, pages: e.target.value })}
+                  value={book.pages}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="description">description</label>
+                <label htmlFor="description">Description</label>
                 <input
                   type="text"
                   name="description"
-                  placeholder="description"
+                  placeholder="Description"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) =>
+                    setBook({ ...book, description: e.target.value })
+                  }
+                  value={book.description}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="website">website</label>
+                <label htmlFor="website">Website</label>
                 <input
                   type="text"
                   name="website"
-                  placeholder="website"
+                  placeholder="Website"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
-                  onChange={(e) => setWebsite(e.target.value)}
+                  onChange={(e) =>
+                    setBook({ ...book, website: e.target.value })
+                  }
+                  value={book.website}
                   required
                 />
               </div>
@@ -206,7 +224,7 @@ const Page = () => {
                   type="submit"
                   className="rounded-md bg-black px-3 py-2 text-white transition hover:bg-opacity-80"
                 >
-                  Add book
+                  Edit book
                 </button>
               </div>
             </form>
