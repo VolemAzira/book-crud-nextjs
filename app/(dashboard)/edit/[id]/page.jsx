@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Link } from "next/link";
 
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -16,15 +17,37 @@ const Page = () => {
   const [pages, setPages] = useState("");
   const [description, setDescription] = useState("");
   const [website, setWebsite] = useState("");
+  const [book, setBook] = useState([]);
 
-  const handleEdit = async (e) => {
-    
-  }
+  const { bookId } = useParams();
+
+  useEffect(() => {
+    try {
+      const fetchbookbyid = async () => {
+        const res = await fetch(`${serverUrl}/api/books/${bookId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 1219|7WAlHB0Nt7XGniILoxZsGOFAdGXI1kyQ8JJrwFa8`,
+          },
+        });
+        const data = await res.json();
+        if (data.error) {
+          alert("Error: " + data.error);
+        } else {
+          setBook(data);
+        }
+      };
+      fetchbookbyid();
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  }, [bookId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${serverUrl}/api/books/add`, {
+      const res = await fetch(`${serverUrl}/api/books/${bookId}/edit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +92,7 @@ const Page = () => {
         <br />
         <section className="flex justify-between">
           <span className="w-1/2">
-            <h2 className="text-lg font-semibold text-gray-800">Add book</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Edit book</h2>
             <div className="text-sm font-medium text-neutral-400">
               Lorem ipsum dolor sit amet
             </div>
@@ -85,7 +108,7 @@ const Page = () => {
                   placeholder="isbn"
                   className="mt-3 w-full rounded-md border border-slate-100 p-3"
                   onChange={(e) => setIsbn(e.target.value)}
-                  value={isbn}
+                  value={book.isbn}
                   required
                 />
               </div>
